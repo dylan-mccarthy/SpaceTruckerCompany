@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpaceTruckerCompany.API.Data;
 
@@ -10,9 +11,11 @@ using SpaceTruckerCompany.API.Data;
 namespace SpaceTruckerCompany.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230627122054_AddShipsAndItems")]
+    partial class AddShipsAndItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,8 +29,8 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double>("Credits")
-                        .HasColumnType("float");
+                    b.Property<int>("Credits")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -145,23 +148,17 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<double>("BuyPrice")
-                        .HasColumnType("float");
-
                     b.Property<string>("ItemId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("SellPrice")
-                        .HasColumnType("float");
-
                     b.Property<string>("ShipId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SpaceShipId")
+                    b.Property<string>("SpaceShipEntryId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -170,7 +167,7 @@ namespace SpaceTruckerCompany.API.Migrations
 
                     b.HasIndex("ShipId");
 
-                    b.HasIndex("SpaceShipId");
+                    b.HasIndex("SpaceShipEntryId");
 
                     b.ToTable("TradeItemEntries");
                 });
@@ -198,15 +195,15 @@ namespace SpaceTruckerCompany.API.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceShipEntry", "Ship")
-                        .WithMany("Cargo")
+                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceShip", "Ship")
+                        .WithMany("TradeItems")
                         .HasForeignKey("ShipId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceShip", null)
-                        .WithMany("TradeItems")
-                        .HasForeignKey("SpaceShipId");
+                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceShipEntry", null)
+                        .WithMany("Cargo")
+                        .HasForeignKey("SpaceShipEntryId");
 
                     b.Navigation("Item");
 

@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using SpaceTruckerCompany.API.Data;
+using SpaceTruckerCompany.API.Models;
+using SpaceTruckerCompany.API.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,11 +26,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = Configuration["Jwt:Issuer"],
             ValidAudience = Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Configuration must contain Jwt:Key")))
         };
     });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<ISpaceShipService, SpaceShipService>();
+builder.Services.AddTransient<ITradeItemService, TradeItemService>();
 
 var app = builder.Build();
 
