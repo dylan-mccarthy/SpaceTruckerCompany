@@ -10,6 +10,8 @@ namespace SpaceTruckerCompany.API.Service
         public SpaceStation UpdateStation(SpaceStation station);
         public SpaceStation GetStation(string? id);
         public List<SpaceStation> GetStations();
+        public void AddTradeItemEntry(SpaceStation station, TradeItemEntry entry);
+        public void RemoveTradeItemEntry(SpaceStation station, TradeItemEntry entry);
 
     }
     public class SpaceStationService : ISpaceStationService
@@ -47,6 +49,44 @@ namespace SpaceTruckerCompany.API.Service
         public List<SpaceStation> GetStations()
         {
             return _stationRepository.Search(s => true).ToList();
+        }
+
+        public void AddTradeItemEntry(SpaceStation station, TradeItemEntry entry)
+        {
+            //Check if station has item
+            //If it does, update entry
+            //If it doesn't, add entry
+            if(station == null) throw new Exception("Station not provided");
+            if(entry == null) throw new Exception("Entry not provided");
+
+            if (station.TradeItems.FirstOrDefault(t => t.Item == entry.Item) is { } item)
+            {
+                  item.Quantity += entry.Quantity;
+            }
+            else
+            {
+                station.TradeItems.Add(entry);
+            }
+            _stationRepository.Update(station);
+
+        }
+
+        public void RemoveTradeItemEntry(SpaceStation station, TradeItemEntry entry)
+        {
+            if(station == null) throw new Exception("Station not provided");
+            if(entry == null) throw new Exception("Entry not provided");
+
+            if (station.TradeItems.FirstOrDefault(t => t.Item == entry.Item) is { } item)
+            {
+                item.Quantity -= entry.Quantity;
+
+                if (item.Quantity == 0)
+                {
+                    station.TradeItems.Remove(item);
+                }
+            }
+            _stationRepository.Update(station);
+
         }
     }
 }

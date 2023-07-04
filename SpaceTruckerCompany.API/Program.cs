@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using SpaceTruckerCompany.API.Data;
 using SpaceTruckerCompany.API.Models;
 using SpaceTruckerCompany.API.Service;
+using SpaceTruckerCompany.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,8 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ISpaceShipService, SpaceShipService>();
 builder.Services.AddTransient<ITradeItemService, TradeItemService>();
 builder.Services.AddTransient<ISpaceStationService, SpaceStationService>();
+
+builder.Services.AddHostedService<ServerTick>();
 
 var app = builder.Build();
 

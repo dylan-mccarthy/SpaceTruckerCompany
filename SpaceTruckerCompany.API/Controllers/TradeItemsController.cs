@@ -47,11 +47,16 @@ namespace SpaceTruckerCompany.API.Controllers
             _tradeItemService.RemoveTradeItem(tradeItem);
         }
         [HttpPost("Buy", Name = "BuyTradeItem")]
-        [Authorize(Roles = "User")]
         public TradeItemEntry BuyTradeItem(TradeRequest request)
         {
             _logger.LogInformation($"Recieved Request with ID: {request.Id}");
-            return _tradeItemService.BuyTradeItem(request.Ship, request.Item, request.Amount);
+            return _tradeItemService.BuyTradeItem(request.Station, request.Ship, request.Item);
+        }
+        [HttpPost("Sell", Name = "SellTradeItem")]
+        public TradeItemEntry SellTradeItem(TradeRequest request)
+        {
+            _logger.LogInformation($"Recieved Request with ID: {request.Id}");
+            return _tradeItemService.SellTradeItem(request.Station, request.Ship, request.Item);
         }
     }
 }

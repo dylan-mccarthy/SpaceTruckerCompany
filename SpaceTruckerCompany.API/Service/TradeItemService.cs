@@ -16,7 +16,8 @@ namespace SpaceTruckerCompany.API.Service
         public void UpdateTradeItemEntry(TradeItemEntry entry);
         public TradeItemEntry GetTradeItemEntry(string? id);
 
-        public TradeItemEntry BuyTradeItem(SpaceShipEntry ship, TradeItemEntry tradeItem, int amount);
+        public TradeItemEntry BuyTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItem);
+        public TradeItemEntry SellTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItem);
 
     }
     public class TradeItemService : ITradeItemService
@@ -25,13 +26,15 @@ namespace SpaceTruckerCompany.API.Service
         private readonly IRepository<TradeItem> _tradeItemRepository;
         private readonly IRepository<TradeItemEntry> _entryRepository;
         private readonly ISpaceShipService _spaceShipService;
+        private readonly ISpaceStationService _spaceStationService;
 
-        public TradeItemService(ILogger<TradeItemService> logger, IRepository<TradeItem> tradeItemRepository, IRepository<TradeItemEntry> entryRespository, ISpaceShipService spaceShipService)
+        public TradeItemService(ILogger<TradeItemService> logger, IRepository<TradeItem> tradeItemRepository, IRepository<TradeItemEntry> entryRespository, ISpaceShipService spaceShipService, ISpaceStationService spaceStationService)
         {
             _logger = logger;
             _tradeItemRepository = tradeItemRepository;
             _entryRepository = entryRespository;
             _spaceShipService = spaceShipService;
+            _spaceStationService = spaceStationService;
         }
 
         public TradeItem AddTradeItem(TradeItem tradeItem)
@@ -86,36 +89,59 @@ namespace SpaceTruckerCompany.API.Service
             return entry ?? throw new Exception("Unable to find Entry Information");
         }
 
-        public TradeItemEntry BuyTradeItem(SpaceShipEntry ship, TradeItemEntry tradeItem, int amount)
+        public TradeItemEntry BuyTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItemEntry)
         {
+            if(station == null) throw new Exception("Station not provided");
             if(ship == null) throw new Exception("Ship not provided");
-            if(tradeItem == null) throw new Exception("TradeItem not provided");
-            var entry = new TradeItemEntry
-            {
-                Item = tradeItem.Item,
-                Ship = ship,
-                Quantity = amount
-            };
+            if(tradeItemEntry == null) throw new Exception("TradeItem not provided");
+
+            _entryRepository.Create(tradeItemEntry);
 
             //Check ship has enough cargo space
-            if (ship.CargoSpace < amount * tradeItem.Item.Volume) throw new Exception("Not enough cargo space to buy this item");
+            if (ship.CargoSpace < tradeItemEntry.Quantity * tradeItemEntry.Item.Volume) throw new Exception("Not enough cargo space to buy this item");
 
-            //Check the ship has enough credits
-            if(ship.Credits < tradeItem.BuyPrice * amount) throw new Exception("Not enough credits to buy this item");
-            _entryRepository.Create(entry);
-
-            //Remove credits from ship
-            ship.Credits -= tradeItem.BuyPrice * amount;
-            //Add credits to station - TODO
+            //Remove item from Space Station
+            _spaceStationService.RemoveTradeItemEntry(station, tradeItemEntry);
 
             //Add to cargo hold
-            ship.UsedCargoSpace += amount * tradeItem.Item.Volume;
-            ship.Cargo.Add(entry);
+            ship.UsedCargoSpace += tradeItemEntry.Quantity * tradeItemEntry.Item.Volume;
+            ship.Cargo.Add(tradeItemEntry);
 
             //Update ship
             _spaceShipService.UpdateEntry(ship);
 
-            return entry;
+            _entryRepository.Create(tradeItemEntry);
+            return tradeItemEntry;
+        }
+
+        public TradeItemEntry SellTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItemEntry)
+        {
+            if (station == null) throw new Exception("Station not provided");
+            if (ship == null) throw new Exception("Ship not provided");
+            if (tradeItemEntry == null) throw new Exception("TradeItem not provided");
+
+            _entryRepository.Create(tradeItemEntry);
+
+            //Remove item from Space Station
+            _spaceStationService.AddTradeItemEntry(station, tradeItemEntry);
+
+            //Remove from cargo hold
+            ship.UsedCargoSpace -= tradeItemEntry.Quantity * tradeItemEntry.Item.Volume;
+
+            if (ship.Cargo.FirstOrDefault(t => t.Item == tradeItemEntry.Item) is { } item)
+            {
+                item.Quantity -= tradeItemEntry.Quantity;
+
+                if (item.Quantity == 0)
+                {
+                    ship.Cargo.Remove(item);
+                }
+            }
+
+            //Update ship
+            _spaceShipService.UpdateEntry(ship);
+
+            return tradeItemEntry;
         }
     }
 }
