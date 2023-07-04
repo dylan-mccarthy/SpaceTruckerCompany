@@ -18,19 +18,9 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if(user != null && user.Identity != null && user.Identity.IsAuthenticated){
-            var result = await GetWeatherForecast(user);
-            Console.WriteLine(result);
             var accountDetails = await GetUserAccount(user);
             Console.WriteLine(accountDetails);
         }
-    }
-
-    public async Task<string> GetWeatherForecast(ClaimsPrincipal user){
-        var tokenString = TokenGenerator.GenerateToken(user.Claims);
-        var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-        var response = await httpClient.GetAsync("http://localhost:5094/WeatherForecast");
-        return response.Content.ReadAsStringAsync().Result;
     }
 
     public async Task<string> GetUserAccount(ClaimsPrincipal user){

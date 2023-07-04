@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpaceTruckerCompany.API.Data;
 
@@ -10,9 +11,11 @@ using SpaceTruckerCompany.API.Data;
 namespace SpaceTruckerCompany.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230704124243_AddNewEntries")]
+    partial class AddNewEntries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,9 +101,6 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.Property<string>("ShipId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SpaceStationId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("UsedCargoSpace")
                         .HasColumnType("int");
 
@@ -110,63 +110,7 @@ namespace SpaceTruckerCompany.API.Migrations
 
                     b.HasIndex("ShipId");
 
-                    b.HasIndex("SpaceStationId");
-
                     b.ToTable("SpaceShipEntries");
-                });
-
-            modelBuilder.Entity("SpaceTruckerCompany.API.Models.SpaceShipRoute", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("CurrentCoordinatesX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CurrentCoordinatesY")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DestinationCoordinatesX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DestinationCoordinatesY")
-                        .HasColumnType("float");
-
-                    b.Property<string>("PlayerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShipId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SpaceShipRoutes");
-                });
-
-            modelBuilder.Entity("SpaceTruckerCompany.API.Models.SpaceStation", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("CoordinatesX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CoordinatesY")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SpaceStations");
                 });
 
             modelBuilder.Entity("SpaceTruckerCompany.API.Models.TradeItem", b =>
@@ -226,9 +170,6 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.Property<string>("SpaceShipId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SpaceStationId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("TradeType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -240,8 +181,6 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.HasIndex("ShipId");
 
                     b.HasIndex("SpaceShipId");
-
-                    b.HasIndex("SpaceStationId");
 
                     b.ToTable("TradeItemEntries");
                 });
@@ -257,10 +196,6 @@ namespace SpaceTruckerCompany.API.Migrations
                     b.HasOne("SpaceTruckerCompany.API.Models.SpaceShip", "Ship")
                         .WithMany()
                         .HasForeignKey("ShipId");
-
-                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceStation", null)
-                        .WithMany("Ships")
-                        .HasForeignKey("SpaceStationId");
 
                     b.Navigation("Owner");
 
@@ -283,10 +218,6 @@ namespace SpaceTruckerCompany.API.Migrations
                         .WithMany("TradeItems")
                         .HasForeignKey("SpaceShipId");
 
-                    b.HasOne("SpaceTruckerCompany.API.Models.SpaceStation", null)
-                        .WithMany("TradeItems")
-                        .HasForeignKey("SpaceStationId");
-
                     b.Navigation("Item");
 
                     b.Navigation("Ship");
@@ -305,13 +236,6 @@ namespace SpaceTruckerCompany.API.Migrations
             modelBuilder.Entity("SpaceTruckerCompany.API.Models.SpaceShipEntry", b =>
                 {
                     b.Navigation("Cargo");
-                });
-
-            modelBuilder.Entity("SpaceTruckerCompany.API.Models.SpaceStation", b =>
-                {
-                    b.Navigation("Ships");
-
-                    b.Navigation("TradeItems");
                 });
 #pragma warning restore 612, 618
         }

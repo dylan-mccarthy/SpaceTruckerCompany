@@ -5,7 +5,6 @@ namespace SpaceTruckerCompany.API.Models
     public class SpaceShip : IEntity
     {
         public string Id { get; set; }
-        public string Location { get; set; }
         public int Fuel { get; set; }
         public int Cargo { get; set; }
         public List<TradeItemEntry> TradeItems { get; set; }
@@ -18,7 +17,6 @@ namespace SpaceTruckerCompany.API.Models
         public SpaceShip()
         {
             Id = System.Guid.NewGuid().ToString();
-            Location = "Earth";
             Fuel = 100;
             Cargo = 0;
             TradeItems = new List<TradeItemEntry>();

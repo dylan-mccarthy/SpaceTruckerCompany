@@ -11,6 +11,8 @@
         public double BuyPrice { get; set; }
         public double SellPrice { get; set; }
 
+        public string TradeType { get; set; }
+
         public TradeItemEntry()
         {
             Id = System.Guid.NewGuid().ToString();
@@ -19,6 +21,7 @@
             Quantity = 0;
             BuyPrice = 100;
             SellPrice = 100;
+            TradeType = "Buy";
         }
 
     }

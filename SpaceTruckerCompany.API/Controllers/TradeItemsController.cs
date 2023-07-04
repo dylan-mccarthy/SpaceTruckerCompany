@@ -25,7 +25,7 @@ namespace SpaceTruckerCompany.API.Controllers
             _logger.LogInformation("Getting TradeItem Information");
             return _tradeItemService.GetTradeItems();
         }
-        [HttpPost(Name = "AddTradeItem")]
+        [HttpPost("Add", Name = "AddTradeItem")]
         [Authorize(Roles = "Admin")]
         public TradeItem Add(TradeItem tradeItem)
         {
@@ -46,11 +46,17 @@ namespace SpaceTruckerCompany.API.Controllers
               _logger.LogInformation($"Deleting TradeItem {tradeItem.Id}");
             _tradeItemService.RemoveTradeItem(tradeItem);
         }
-        [HttpPost(Name = "BuyTradeItem")]
-        public TradeItemEntry BuyTradeItem(SpaceShipEntry ship, TradeItemEntry tradeItem, int amount)
+        [HttpPost("Buy", Name = "BuyTradeItem")]
+        public TradeItemEntry BuyTradeItem(TradeRequest request)
         {
-            _logger.LogInformation($"Buying TradeItem {tradeItem.Id} for {ship.Id}");
-            return _tradeItemService.BuyTradeItem(ship, tradeItem, amount);
+            _logger.LogInformation($"Recieved Request with ID: {request.Id}");
+            return _tradeItemService.BuyTradeItem(request.Station, request.Ship, request.Item);
+        }
+        [HttpPost("Sell", Name = "SellTradeItem")]
+        public TradeItemEntry SellTradeItem(TradeRequest request)
+        {
+            _logger.LogInformation($"Recieved Request with ID: {request.Id}");
+            return _tradeItemService.SellTradeItem(request.Station, request.Ship, request.Item);
         }
     }
 }
