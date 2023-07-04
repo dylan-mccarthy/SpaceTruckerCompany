@@ -30,7 +30,7 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Getting Account Information for {username}");
         return _accountService.GetAccount(username);
     }
-    [HttpGet(Name = "AdminGetAccount")]
+    [HttpGet("/Admin", Name = "AdminGetAccount")]
     [Authorize(Roles = "Admin")]
     public Player AdminGet(Player player)
     {
@@ -67,7 +67,7 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Deleting Account for {username}");
         _accountService.DeleteAccount(player);
     }
-    [HttpDelete(Name = "AdminDeleteAccount")]
+    [HttpDelete("Admin", Name = "AdminDeleteAccount")]
     [Authorize(Roles = "Admin")]
     public void AdminDelete(Player player)
     {

@@ -36,6 +36,7 @@ builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ISpaceShipService, SpaceShipService>();
 builder.Services.AddTransient<ITradeItemService, TradeItemService>();
+builder.Services.AddTransient<ISpaceStationService, SpaceStationService>();
 
 var app = builder.Build();
 
