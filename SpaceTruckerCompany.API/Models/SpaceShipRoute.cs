@@ -6,8 +6,10 @@
         public string PlayerId { get; set; }
         public string ShipId { get; set; }
         public string StationId { get; set; }
-        public int[] CurrentCoordinates { get; set; }
-        public int[] DestinationCoordinates { get; set; }
+        public double CurrentCoordinatesX { get; set; }
+        public double CurrentCoordinatesY { get; set; }
+        public double DestinationCoordinatesX { get; set; }
+        public double DestinationCoordinatesY { get; set; }
 
         public SpaceShipRoute()
         {
@@ -15,8 +17,10 @@
             PlayerId = "";
             ShipId = "";
             StationId = "";
-            CurrentCoordinates = new int[2] { 0, 0 };
-            DestinationCoordinates = new int[2] { 0, 0 };
+            CurrentCoordinatesX = 0;
+            CurrentCoordinatesY = 0;
+            DestinationCoordinatesX = 0;
+            DestinationCoordinatesY = 0;
         }
     }
 }

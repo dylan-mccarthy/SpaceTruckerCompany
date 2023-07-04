@@ -15,5 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<SpaceShipEntry> SpaceShipEntries { get; set; } = null!;
     public DbSet<TradeItem> TradeItems { get; set; } = null!;
     public DbSet<TradeItemEntry> TradeItemEntries { get; set; } = null!;
+    public DbSet<SpaceStation> SpaceStations { get; set; } = null!;
+    public DbSet<SpaceShipRoute> SpaceShipRoutes { get; set; } = null!;
 
 }

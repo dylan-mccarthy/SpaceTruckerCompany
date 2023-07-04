@@ -38,11 +38,11 @@ namespace SpaceTruckerCompany.API
                     var shipEntry = _spaceShipService.GetEntry(route.ShipId);
 
                     //Get destination
-                    var destinationX = route.DestinationCoordinates[0];
-                    var destinationY = route.DestinationCoordinates[1];
+                    var destinationX = route.DestinationCoordinatesX;
+                    var destinationY = route.DestinationCoordinatesY;
                     //Get current location
-                    var currentLocationX = route.CurrentCoordinates[0];
-                    var currentLocationY = route.CurrentCoordinates[1];
+                    var currentLocationX = route.CurrentCoordinatesX;
+                    var currentLocationY = route.CurrentCoordinatesY;
 
                     //Calculate distance to destination
                     var distanceToDestination = Math.Sqrt(Math.Pow(destinationX - currentLocationX, 2) + Math.Pow(destinationY - currentLocationY, 2));
@@ -66,8 +66,8 @@ namespace SpaceTruckerCompany.API
                     shipEntry.CurrentFuel -= fuelUsed;
 
                     //Update ship location
-                    route.CurrentCoordinates[0] = (int)newLocationX;
-                    route.CurrentCoordinates[1] = (int)newLocationY;
+                    route.CurrentCoordinatesX = newLocationX;
+                    route.CurrentCoordinatesY = newLocationY;
 
                     //Check if ship has arrived
                     if(distanceToDestination == 0)

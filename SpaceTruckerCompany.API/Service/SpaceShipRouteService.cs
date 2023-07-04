@@ -38,11 +38,11 @@ namespace SpaceTruckerCompany.API.Service
             //Validate that the ship has enough fuel to get to destination
             var shipEntry = _spaceShipService.GetEntry(spaceShipRoute.ShipId);
             //Calculate distance of route
-            var currentLocationX = spaceShipRoute.CurrentCoordinates[0];
-            var currentLocationY = spaceShipRoute.CurrentCoordinates[1];
+            var currentLocationX = spaceShipRoute.CurrentCoordinatesX;
+            var currentLocationY = spaceShipRoute.CurrentCoordinatesY;
 
-            var destinationLocationX = spaceShipRoute.DestinationCoordinates[0];
-            var destinationLocationY = spaceShipRoute.DestinationCoordinates[1];
+            var destinationLocationX = spaceShipRoute.DestinationCoordinatesX;
+            var destinationLocationY = spaceShipRoute.DestinationCoordinatesY;
 
             var distance = Math.Sqrt(Math.Pow(destinationLocationX - currentLocationX, 2) + Math.Pow(destinationLocationY - currentLocationY, 2));
             if(distance == 0) throw new Exception("Destination is the same as current location");

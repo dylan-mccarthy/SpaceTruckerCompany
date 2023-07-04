@@ -31,13 +31,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton);
 
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ISpaceShipService, SpaceShipService>();
 builder.Services.AddTransient<ITradeItemService, TradeItemService>();
 builder.Services.AddTransient<ISpaceStationService, SpaceStationService>();
+builder.Services.AddTransient<ISpaceShipRouteService, SpaceShipRouteService>();
+builder.Services.AddTransient<ITradeService, TradeService>();
 
 builder.Services.AddHostedService<ServerTick>();
 

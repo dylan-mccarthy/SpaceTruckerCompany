@@ -6,7 +6,8 @@
         public string Name { get; set; }
         public List<TradeItemEntry> TradeItems { get; set; }
         public List<SpaceShipEntry> Ships { get; set; }
-        public int[] Coordinates { get; set; }
+        public double CoordinatesX { get; set; }
+        public double CoordinatesY { get; set; }
 
         public SpaceStation()
         {
@@ -14,7 +15,8 @@
             Name = "";
             TradeItems = new List<TradeItemEntry>();
             Ships = new List<SpaceShipEntry>();
-            Coordinates = new int[2] { 0, 0 };
+            CoordinatesX = 0;
+            CoordinatesY = 0;
         }
     }
 }
