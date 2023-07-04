@@ -43,6 +43,9 @@ namespace SpaceTruckerCompany.API.Service
             var shipEntry = _spaceShipService.GetEntry(ship.Id);
             if (shipEntry == null) throw new Exception("Unable to find Ship Information");
 
+            //Confirm ship is at station
+            if (shipEntry.Location != stationEntry.Name) throw new Exception("Ship is not at station");
+
             //Get Trade Item Entry information
             var tradeItemEntry = _tradeItemService.GetTradeItemEntry(tradeItem.Id) ?? throw new Exception("Unable to find Trade Item Information");
 

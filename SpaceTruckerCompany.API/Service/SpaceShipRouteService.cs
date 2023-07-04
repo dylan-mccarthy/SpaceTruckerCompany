@@ -16,11 +16,13 @@ namespace SpaceTruckerCompany.API.Service
     {
         private readonly ILogger<SpaceShipRouteService> _logger;
         private readonly IRepository<SpaceShipRoute> _spaceShipRouteRepository;
+        private readonly ISpaceShipService _spaceShipService;
 
-        public SpaceShipRouteService(ILogger<SpaceShipRouteService> logger, IRepository<SpaceShipRoute> spaceShipRouteRepository)
+        public SpaceShipRouteService(ILogger<SpaceShipRouteService> logger, IRepository<SpaceShipRoute> spaceShipRouteRepository, ISpaceShipService spaceShipService)
         {
             _logger = logger;
             _spaceShipRouteRepository = spaceShipRouteRepository;
+            _spaceShipService = spaceShipService;
         }
 
         public SpaceShipRoute GetSpaceShipRoute(string id)
@@ -33,6 +35,21 @@ namespace SpaceTruckerCompany.API.Service
         public SpaceShipRoute AddSpaceShipRoute(SpaceShipRoute spaceShipRoute)
         {
             if (spaceShipRoute == null) throw new Exception("SpaceShipRoute not provided");
+            //Validate that the ship has enough fuel to get to destination
+            var shipEntry = _spaceShipService.GetEntry(spaceShipRoute.ShipId);
+            //Calculate distance of route
+            var currentLocationX = spaceShipRoute.CurrentCoordinates[0];
+            var currentLocationY = spaceShipRoute.CurrentCoordinates[1];
+
+            var destinationLocationX = spaceShipRoute.DestinationCoordinates[0];
+            var destinationLocationY = spaceShipRoute.DestinationCoordinates[1];
+
+            var distance = Math.Sqrt(Math.Pow(destinationLocationX - currentLocationX, 2) + Math.Pow(destinationLocationY - currentLocationY, 2));
+            if(distance == 0) throw new Exception("Destination is the same as current location");
+            var fuelRequired = distance * shipEntry.FuelUsageRate;
+            if (shipEntry.CurrentFuel < fuelRequired) throw new Exception("Not enough fuel");
+
+
             return _spaceShipRouteRepository.Create(spaceShipRoute);
         }
 
