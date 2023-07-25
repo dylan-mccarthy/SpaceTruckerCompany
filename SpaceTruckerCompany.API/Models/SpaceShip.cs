@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SpaceTruckerCompany.API.Models
 {
     public class SpaceShip : IEntity
     {
-        public string Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public int Fuel { get; set; }
         public int Cargo { get; set; }
         public List<TradeItemEntry> TradeItems { get; set; }
@@ -16,7 +20,7 @@ namespace SpaceTruckerCompany.API.Models
 
         public SpaceShip()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id =-1;
             Fuel = 100;
             Cargo = 0;
             TradeItems = new List<TradeItemEntry>();

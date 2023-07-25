@@ -1,8 +1,13 @@
-﻿namespace SpaceTruckerCompany.API.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace SpaceTruckerCompany.API.Models
 {
     public class SpaceStation : IEntity
     {
-        public string Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string Name { get; set; }
         public List<TradeItemEntry> TradeItems { get; set; }
         public List<SpaceShipEntry> Ships { get; set; }
@@ -11,7 +16,7 @@
 
         public SpaceStation()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = -1;
             Name = "";
             TradeItems = new List<TradeItemEntry>();
             Ships = new List<SpaceShipEntry>();

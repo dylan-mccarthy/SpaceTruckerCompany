@@ -1,9 +1,14 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SpaceTruckerCompany.API.Models
 {
     public class TradeItem : IEntity
     {
-        public string Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
         public int BasePrice { get; set; }
@@ -14,7 +19,7 @@ namespace SpaceTruckerCompany.API.Models
 
         public TradeItem()
         {
-            Id = System.Guid.NewGuid().ToString();
+            Id = -1;
             Name = "Item";
             Category = "General";
             BasePrice = 100;

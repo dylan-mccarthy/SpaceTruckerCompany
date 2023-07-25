@@ -8,13 +8,13 @@ namespace SpaceTruckerCompany.API.Service
         public TradeItem AddTradeItem(TradeItem tradeItem);
         public void RemoveTradeItem(TradeItem tradeItem);
         public TradeItem UpdateTradeItem(TradeItem tradeItem);
-        public TradeItem GetTradeItem(string? id);
+        public TradeItem GetTradeItem(int id);
         public List<TradeItem> GetTradeItems();
 
         public void AddTradeItemEntry(TradeItemEntry entry);
         public void RemoveTradeItemEntry(TradeItemEntry entry);
         public void UpdateTradeItemEntry(TradeItemEntry entry);
-        public TradeItemEntry GetTradeItemEntry(string? id);
+        public TradeItemEntry GetTradeItemEntry(int id);
 
         public TradeItemEntry BuyTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItem);
         public TradeItemEntry SellTradeItem(SpaceStation station, SpaceShipEntry ship, TradeItemEntry tradeItem);
@@ -52,9 +52,8 @@ namespace SpaceTruckerCompany.API.Service
             if (tradeItem == null) throw new Exception("TradeItem not provided");
             return _tradeItemRepository.Update(tradeItem);
         }
-        public TradeItem GetTradeItem(string? id)
+        public TradeItem GetTradeItem(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("TradeItem Id not provided");
             var tradeItem = _tradeItemRepository.Search(s => s.Id == id).FirstOrDefault();
             return tradeItem ?? throw new Exception("Unable to find TradeItem Information");
         }
@@ -82,9 +81,8 @@ namespace SpaceTruckerCompany.API.Service
             _entryRepository.Update(entry);
         }
 
-        public TradeItemEntry GetTradeItemEntry(string? id)
+        public TradeItemEntry GetTradeItemEntry(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("Entry Id not provided");
             var entry = _entryRepository.Search(s => s.Id == id).FirstOrDefault();
             return entry ?? throw new Exception("Unable to find Entry Information");
         }

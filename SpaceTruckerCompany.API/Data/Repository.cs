@@ -11,6 +11,7 @@ namespace SpaceTruckerCompany.API.Data
         public T Create(T entity);
         public T Update(T entity);
         public void Delete(T entity);
+        public Task DeleteBatch(List<T> entities);
         public List<T> Get();
         public List<T> Search(Expression<Func<T, bool>> predicate);
     }
@@ -35,14 +36,28 @@ namespace SpaceTruckerCompany.API.Data
         }
         public T Update(T entity)
         {
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-            return entity;
+            lock (_context)
+            {
+                _context.Set<T>().Attach(entity);
+                _context.Set<T>().Update(entity);
+                _context.SaveChanges();
+                return entity;
+            }
+
         }
         public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
             _context.SaveChanges();
+        }
+
+        public async Task DeleteBatch(List<T> entities)
+        {
+            await Task.WhenAll(entities.Select(async entity =>
+            {
+                _context.Set<T>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }));
         }
         public List<T> Get()
         {
@@ -50,7 +65,10 @@ namespace SpaceTruckerCompany.API.Data
         }
         public List<T> Search(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().Where(predicate).ToList();
+            lock (_context)
+            {
+                return _context.Set<T>().Where(predicate).ToList();
+            }
         }
 
 
