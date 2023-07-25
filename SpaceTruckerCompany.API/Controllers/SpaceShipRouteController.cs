@@ -30,7 +30,7 @@ namespace SpaceTruckerCompany.API.Controllers
             return _spaceShipRouteService.GetAllSpaceShipRoutes();
         }
         [HttpGet]
-        public SpaceShipRoute Get(string id)
+        public SpaceShipRoute Get(int id)
         {
             _logger.LogInformation($"Getting SpaceShipRoute Information for {id}");
             return _spaceShipRouteService.GetSpaceShipRoute(id);
@@ -77,7 +77,7 @@ namespace SpaceTruckerCompany.API.Controllers
         }
 
         [HttpDelete("Delete")]
-        public void Delete(string id)
+        public void Delete(int id)
         {
             _logger.LogInformation($"Deleting SpaceShipRoute {id}");
             //Check that the player is the owner of the ship
@@ -93,7 +93,7 @@ namespace SpaceTruckerCompany.API.Controllers
 
         [HttpDelete("Admin/Delete")]
         [Authorize(Roles = "Admin")]    
-        public void AdminDelete(string id)
+        public void AdminDelete(int id)
         {
             _logger.LogInformation($"Deleting SpaceShipRoute {id}");
             _spaceShipRouteService.DeleteSpaceShipRoute(id);

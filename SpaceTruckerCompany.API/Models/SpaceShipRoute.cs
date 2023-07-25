@@ -1,11 +1,16 @@
-﻿namespace SpaceTruckerCompany.API.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace SpaceTruckerCompany.API.Models
 {
     public class SpaceShipRoute : IEntity
     {
-        public string Id { get; set; }
-        public string PlayerId { get; set; }
-        public string ShipId { get; set; }
-        public string StationId { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public int PlayerId { get; set; }
+        public int ShipId { get; set; }
+        public int StationId { get; set; }
         public double CurrentCoordinatesX { get; set; }
         public double CurrentCoordinatesY { get; set; }
         public double DestinationCoordinatesX { get; set; }
@@ -13,10 +18,9 @@
 
         public SpaceShipRoute()
         {
-            Id = System.Guid.NewGuid().ToString();
-            PlayerId = "";
-            ShipId = "";
-            StationId = "";
+            PlayerId = 0;
+            ShipId = 0;
+            StationId = 0;
             CurrentCoordinatesX = 0;
             CurrentCoordinatesY = 0;
             DestinationCoordinatesX = 0;

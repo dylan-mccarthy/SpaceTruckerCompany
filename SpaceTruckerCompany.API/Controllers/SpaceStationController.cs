@@ -28,7 +28,7 @@ namespace SpaceTruckerCompany.API.Controllers
         }
         [HttpGet]
         [Route("{id}")]
-        public SpaceStation Get(string id)
+        public SpaceStation Get(int id)
         {
             _logger.LogInformation($"Getting SpaceStation Information for {id}");
             return _spaceStationService.GetStation(id);

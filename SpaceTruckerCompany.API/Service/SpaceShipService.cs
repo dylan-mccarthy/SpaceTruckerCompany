@@ -8,13 +8,13 @@ namespace SpaceTruckerCompany.API.Service
         public SpaceShip AddShip(SpaceShip ship);
         public void RemoveShip(SpaceShip ship);
         public SpaceShip UpdateShip(SpaceShip ship);
-        public SpaceShip GetShip(string? id);
+        public SpaceShip GetShip(int id);
         public List<SpaceShip> GetShips();
 
         public void AddEntry(SpaceShipEntry entry);
         public void RemoveEntry(SpaceShipEntry entry);
         public void UpdateEntry(SpaceShipEntry entry);
-        public SpaceShipEntry GetEntry(string? id);
+        public SpaceShipEntry GetEntry(int id);
         public List<SpaceShipEntry> GetEntriesForPlayer(Player player);
         public bool AddTradeItemToShip(SpaceShipEntry ship, TradeItemEntry tradeItem);
         public bool RemoveTradeItemFromShip(SpaceShipEntry ship, TradeItemEntry tradeItem);
@@ -51,9 +51,8 @@ namespace SpaceTruckerCompany.API.Service
             if (ship == null) throw new Exception("Ship not provided");
             return _shipRepository.Update(ship);
         }
-        public SpaceShip GetShip(string? id)
+        public SpaceShip GetShip(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("Ship Id not provided");
             var ship = _shipRepository.Search(s => s.Id == id).FirstOrDefault();
             return ship ?? throw new Exception("Unable to find Ship Information");
         }
@@ -77,9 +76,8 @@ namespace SpaceTruckerCompany.API.Service
             if (entry == null) throw new Exception("Entry not provided");
             _entryRepository.Update(entry);
         }
-        public SpaceShipEntry GetEntry(string? id)
+        public SpaceShipEntry GetEntry(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("Entry Id not provided");
             var entry = _entryRepository.Search(s => s.Id == id).FirstOrDefault();
             return entry ?? throw new Exception("Unable to find Entry Information");
         }

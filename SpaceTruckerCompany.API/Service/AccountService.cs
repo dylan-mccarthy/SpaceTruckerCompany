@@ -25,7 +25,7 @@ namespace SpaceTruckerCompany.API.Service
         public Player GetAccount(string? username)
         {
             if (string.IsNullOrEmpty(username)) throw new Exception("Username not provided");
-            var player = _playerRepository.Search(p => p.Id == username).FirstOrDefault();
+            var player = _playerRepository.Search(p => p.Username == username).FirstOrDefault();
             return player ?? throw new Exception("Unable to find Player Information");
         }
         public Player CreateAccount(string? username)

@@ -8,7 +8,7 @@ namespace SpaceTruckerCompany.API.Service
         public SpaceStation AddStation(SpaceStation station);
         public void RemoveStation(SpaceStation station);
         public SpaceStation UpdateStation(SpaceStation station);
-        public SpaceStation GetStation(string? id);
+        public SpaceStation GetStation(int id);
         public List<SpaceStation> GetStations();
         public void AddTradeItemEntry(SpaceStation station, TradeItemEntry entry);
         public void RemoveTradeItemEntry(SpaceStation station, TradeItemEntry entry);
@@ -40,9 +40,8 @@ namespace SpaceTruckerCompany.API.Service
             if (station == null) throw new Exception("Station not provided");
             return _stationRepository.Update(station);
         }
-        public SpaceStation GetStation(string? id)
+        public SpaceStation GetStation(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("Station Id not provided");
             var station = _stationRepository.Search(s => s.Id == id).FirstOrDefault();
             return station ?? throw new Exception("Unable to find Station Information");
         }

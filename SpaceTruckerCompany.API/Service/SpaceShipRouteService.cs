@@ -5,10 +5,11 @@ namespace SpaceTruckerCompany.API.Service
 {
     public interface ISpaceShipRouteService
     {
-        public SpaceShipRoute GetSpaceShipRoute(string id);
+        public SpaceShipRoute GetSpaceShipRoute(int id);
         public SpaceShipRoute AddSpaceShipRoute(SpaceShipRoute spaceShipRoute);
         public SpaceShipRoute UpdateSpaceShipRoute(SpaceShipRoute spaceShipRoute);
-        public void DeleteSpaceShipRoute(string id);
+        public void DeleteSpaceShipRoute(int id);
+        public void DeleteSpaceShipRouteBatch(List<SpaceShipRoute> spaceShipRouteBatch);
         public List<SpaceShipRoute> GetAllSpaceShipRoutes();
 
     }
@@ -25,9 +26,8 @@ namespace SpaceTruckerCompany.API.Service
             _spaceShipService = spaceShipService;
         }
 
-        public SpaceShipRoute GetSpaceShipRoute(string id)
+        public SpaceShipRoute GetSpaceShipRoute(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("SpaceShipRoute Id not provided");
             var spaceShipRoute = _spaceShipRouteRepository.Search(s => s.Id == id).FirstOrDefault();
             return spaceShipRoute ?? throw new Exception("Unable to find SpaceShipRoute Information");
         }
@@ -59,12 +59,16 @@ namespace SpaceTruckerCompany.API.Service
             return _spaceShipRouteRepository.Update(spaceShipRoute);
         }
 
-        public void DeleteSpaceShipRoute(string id)
+        public void DeleteSpaceShipRoute(int id)
         {
-            if (string.IsNullOrEmpty(id)) throw new Exception("SpaceShipRoute Id not provided");
             var spaceShipRoute = _spaceShipRouteRepository.Search(s => s.Id == id).FirstOrDefault();
             if (spaceShipRoute == null) throw new Exception("Unable to find SpaceShipRoute Information");
             _spaceShipRouteRepository.Delete(spaceShipRoute);
+        }
+
+        public void DeleteSpaceShipRouteBatch(List<SpaceShipRoute> spaceShipRouteBatch)
+        {
+            _spaceShipRouteRepository.DeleteBatch(spaceShipRouteBatch);
         }
 
         public List<SpaceShipRoute> GetAllSpaceShipRoutes()

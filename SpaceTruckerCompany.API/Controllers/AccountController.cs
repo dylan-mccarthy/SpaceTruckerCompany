@@ -27,6 +27,7 @@ public class AccountController : ControllerBase
     {
         if(User.Identity == null) throw new Exception("Unable to find User Information");
         var username = User.Identity.Name;
+        var claims = User.Claims;
         _logger.LogInformation($"Getting Account Information for {username}");
         return _accountService.GetAccount(username);
     }
@@ -37,7 +38,7 @@ public class AccountController : ControllerBase
         if(User.Identity == null) throw new Exception("Unable to find User Information");
         var username = User.Identity.Name;
         _logger.LogInformation($"Getting Account Information for {username}");
-        return _accountService.GetAccount(player.Id);
+        return _accountService.GetAccount(player.Username);
     }
     [HttpPost(Name = "CreateAccount")]
     public Player Create()
@@ -53,7 +54,7 @@ public class AccountController : ControllerBase
         if(User.Identity == null) throw new Exception("Unable to find User Information");
         var username = User.Identity.Name;
         //verify that user is the same as the player
-        if (username != player.Id) throw new Exception("Unable to update account");
+        if (username != player.Username) throw new Exception("Unable to update account");
         _logger.LogInformation($"Updating Account for {username}");
         return _accountService.UpdateAccount(player);
     }
@@ -63,7 +64,7 @@ public class AccountController : ControllerBase
         if(User.Identity == null) throw new Exception("Unable to find User Information");
         var username = User.Identity.Name;
         //verify that user is the same as the player
-        if (username != player.Id) throw new Exception("Unable to delete account");
+        if (username != player.Username) throw new Exception("Unable to delete account");
         _logger.LogInformation($"Deleting Account for {username}");
         _accountService.DeleteAccount(player);
     }
