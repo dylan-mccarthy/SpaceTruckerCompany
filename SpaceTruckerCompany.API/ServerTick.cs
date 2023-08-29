@@ -77,14 +77,14 @@ namespace SpaceTruckerCompany.API
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            GenerateLoad(5000);
+            //GenerateLoad(5000);
 
             var tickTimeTaken = 0;
             var tickTimeGoal = 1000;
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Server Tick: {time}", DateTimeOffset.Now);
+                //_logger.LogInformation("Server Tick: {time}", DateTimeOffset.Now);
                 if(tickTimeTaken > tickTimeGoal)
                 {
                     _logger.LogWarning("Server Overloaded - Server Tick took " + tickTimeTaken + "ms");
@@ -93,131 +93,137 @@ namespace SpaceTruckerCompany.API
                 {
                     await Task.Delay(tickTimeGoal - tickTimeTaken, stoppingToken);
                 }
-                
-                // Server Loop Start
-                // Start Timer
-                var timer = new Stopwatch();
-                timer.Start();
-
-                // Move ships along their routes
-                var shipRoutes = _spaceShipRouteService.GetAllSpaceShipRoutes();
-                
-                var finishedRoutes = new List<SpaceShipRoute>();
-                var parallelOptions = new ParallelOptions();
-                parallelOptions.MaxDegreeOfParallelism = 24;
-                Parallel.ForEach(shipRoutes,parallelOptions, route =>
+                try
                 {
-                    //Get Ship
-                    var shipEntry = _spaceShipService.GetEntry(route.ShipId);
+                    // Server Loop Start
+                    // Start Timer
+                    var timer = new Stopwatch();
+                    timer.Start();
 
-                    //Get destination
-                    var destinationX = route.DestinationCoordinatesX;
-                    var destinationY = route.DestinationCoordinatesY;
-                    //Get current location
-                    var currentLocationX = route.CurrentCoordinatesX;
-                    var currentLocationY = route.CurrentCoordinatesY;
+                    // Move ships along their routes
+                    var shipRoutes = _spaceShipRouteService.GetAllSpaceShipRoutes();
 
-                    //Calculate distance to destination
-                    var distanceToDestination = Math.Sqrt(Math.Pow(destinationX - currentLocationX, 2) + Math.Pow(destinationY - currentLocationY, 2));
+                    var finishedRoutes = new List<SpaceShipRoute>();
 
-                    if (distanceToDestination > shipEntry.Ship.Speed)
+                    //var parallelOptions = new ParallelOptions();
+                    //parallelOptions.MaxDegreeOfParallelism = 12;
+                    //Parallel.ForEach(shipRoutes, parallelOptions, route =>
+                    //{
+                    //    //Get Ship
+                    //    var shipEntry = _spaceShipService.GetEntry(route.ShipId);
+
+                    //    //Get destination
+                    //    var destinationX = route.DestinationCoordinatesX;
+                    //    var destinationY = route.DestinationCoordinatesY;
+                    //    //Get current location
+                    //    var currentLocationX = route.CurrentCoordinatesX;
+                    //    var currentLocationY = route.CurrentCoordinatesY;
+
+                    //    //Calculate distance to destination
+                    //    var distanceToDestination = Math.Sqrt(Math.Pow(destinationX - currentLocationX, 2) + Math.Pow(destinationY - currentLocationY, 2));
+
+                    //    if (distanceToDestination > shipEntry.Ship.Speed)
+                    //    {
+
+                    //        //Calculate movement direction
+                    //        var directionX = (destinationX - currentLocationX) / distanceToDestination;
+                    //        var directionY = (destinationY - currentLocationY) / distanceToDestination;
+
+                    //        //Get ship speed
+                    //        var speed = shipEntry.Ship.Speed;
+
+                    //        //Calculate new location
+                    //        var newLocationX = currentLocationX + (directionX * speed);
+                    //        var newLocationY = currentLocationY + (directionY * speed);
+
+                    //        //Calcuate distance travelled
+                    //        var distanceTravelled = Math.Sqrt(Math.Pow(newLocationX - currentLocationX, 2) + Math.Pow(newLocationY - currentLocationY, 2));
+
+                    //        //Calcuate fuel used
+                    //        var fuelUsed = distanceTravelled * shipEntry.FuelUsageRate;
+                    //        shipEntry.CurrentFuel -= fuelUsed;
+
+                    //        //Update ship location
+                    //        route.CurrentCoordinatesX = newLocationX;
+                    //        route.CurrentCoordinatesY = newLocationY;
+                    //    }
+
+                    //    //Check if ship has arrived
+                    //    if (distanceToDestination == 0 || distanceToDestination < shipEntry.Ship.Speed)
+                    //    {
+                    //        shipEntry.Location = _spaceStationService.GetStation(route.StationId).Name;
+                    //        finishedRoutes.Add(route);
+                    //    }
+                    //});
+
+                    foreach (var route in shipRoutes)
                     {
+                        //Get Ship
+                        var shipEntry = _spaceShipService.GetEntry(route.ShipId);
 
-                        //Calculate movement direction
-                        var directionX = (destinationX - currentLocationX) / distanceToDestination;
-                        var directionY = (destinationY - currentLocationY) / distanceToDestination;
+                        //Get destination
+                        var destinationX = route.DestinationCoordinatesX;
+                        var destinationY = route.DestinationCoordinatesY;
+                        //Get current location
+                        var currentLocationX = route.CurrentCoordinatesX;
+                        var currentLocationY = route.CurrentCoordinatesY;
 
-                        //Get ship speed
-                        var speed = shipEntry.Ship.Speed;
+                        //Calculate distance to destination
+                        var distanceToDestination = Math.Sqrt(Math.Pow(destinationX - currentLocationX, 2) + Math.Pow(destinationY - currentLocationY, 2));
 
-                        //Calculate new location
-                        var newLocationX = currentLocationX + (directionX * speed);
-                        var newLocationY = currentLocationY + (directionY * speed);
+                        if (distanceToDestination > shipEntry.Ship.Speed)
+                        {
 
-                        //Calcuate distance travelled
-                        var distanceTravelled = Math.Sqrt(Math.Pow(newLocationX - currentLocationX, 2) + Math.Pow(newLocationY - currentLocationY, 2));
+                            //Calculate movement direction
+                            var directionX = (destinationX - currentLocationX) / distanceToDestination;
+                            var directionY = (destinationY - currentLocationY) / distanceToDestination;
 
-                        //Calcuate fuel used
-                        var fuelUsed = distanceTravelled * shipEntry.FuelUsageRate;
-                        shipEntry.CurrentFuel -= fuelUsed;
+                            //Get ship speed
+                            var speed = shipEntry.Ship.Speed;
 
-                        //Update ship location
-                        route.CurrentCoordinatesX = newLocationX;
-                        route.CurrentCoordinatesY = newLocationY;
+                            //Calculate new location
+                            var newLocationX = currentLocationX + (directionX * speed);
+                            var newLocationY = currentLocationY + (directionY * speed);
+
+                            //Calcuate distance travelled
+                            var distanceTravelled = Math.Sqrt(Math.Pow(newLocationX - currentLocationX, 2) + Math.Pow(newLocationY - currentLocationY, 2));
+
+                            //Calcuate fuel used
+                            var fuelUsed = distanceTravelled * shipEntry.FuelUsageRate;
+                            shipEntry.CurrentFuel -= fuelUsed;
+
+                            //Update ship location
+                            route.CurrentCoordinatesX = newLocationX;
+                            route.CurrentCoordinatesY = newLocationY;
+                        }
+
+                        //Check if ship has arrived
+                        if (distanceToDestination == 0 || distanceToDestination < shipEntry.Ship.Speed)
+                        {
+                            shipEntry.Location = _spaceStationService.GetStation(route.StationId).Name;
+                            finishedRoutes.Add(route);
+                        }
+                        _spaceShipService.UpdateEntry(shipEntry);
                     }
 
-                    //Check if ship has arrived
-                    if (distanceToDestination == 0 || distanceToDestination < shipEntry.Ship.Speed)
+                    //Remove finished routes
+                    foreach (var route in finishedRoutes)
                     {
-                        shipEntry.Location = _spaceStationService.GetStation(route.StationId).Name;
-                        finishedRoutes.Add(route);
+                        _spaceShipRouteService.DeleteSpaceShipRoute(route.Id);
                     }
-                });
 
-                //foreach (var route in shipRoutes)
-                //{
-                //    //Get Ship
-                //    var shipEntry = _spaceShipService.GetEntry(route.ShipId);
+                    _spaceShipRouteService.DeleteSpaceShipRouteBatch(finishedRoutes);
 
-                //    //Get destination
-                //    var destinationX = route.DestinationCoordinatesX;
-                //    var destinationY = route.DestinationCoordinatesY;
-                //    //Get current location
-                //    var currentLocationX = route.CurrentCoordinatesX;
-                //    var currentLocationY = route.CurrentCoordinatesY;
-
-                //    //Calculate distance to destination
-                //    var distanceToDestination = Math.Sqrt(Math.Pow(destinationX - currentLocationX, 2) + Math.Pow(destinationY - currentLocationY, 2));
-
-                //    if (distanceToDestination > shipEntry.Ship.Speed)
-                //    {
-
-                //        //Calculate movement direction
-                //        var directionX = (destinationX - currentLocationX) / distanceToDestination;
-                //        var directionY = (destinationY - currentLocationY) / distanceToDestination;
-
-                //        //Get ship speed
-                //        var speed = shipEntry.Ship.Speed;
-
-                //        //Calculate new location
-                //        var newLocationX = currentLocationX + (directionX * speed);
-                //        var newLocationY = currentLocationY + (directionY * speed);
-
-                //        //Calcuate distance travelled
-                //        var distanceTravelled = Math.Sqrt(Math.Pow(newLocationX - currentLocationX, 2) + Math.Pow(newLocationY - currentLocationY, 2));
-
-                //        //Calcuate fuel used
-                //        var fuelUsed = distanceTravelled * shipEntry.FuelUsageRate;
-                //        shipEntry.CurrentFuel -= fuelUsed;
-
-                //        //Update ship location
-                //        route.CurrentCoordinatesX = newLocationX;
-                //        route.CurrentCoordinatesY = newLocationY;
-                //    }
-
-                //    //Check if ship has arrived
-                //    if(distanceToDestination == 0 || distanceToDestination < shipEntry.Ship.Speed)
-                //    {
-                //        shipEntry.Location = _spaceStationService.GetStation(route.StationId).Name;
-                //        finishedRoutes.Add(route);
-                //    }
-                //    _spaceShipService.UpdateEntry(shipEntry);
-                //}
-                //Remove finished routes
-                //foreach(var route in finishedRoutes)
-                //{
-                //    _spaceShipRouteService.DeleteSpaceShipRoute(route.Id);
-                //}
-
-                _spaceShipRouteService.DeleteSpaceShipRouteBatch(finishedRoutes);
-
-                //Stop Timer
-                timer.Stop();
-                tickTimeTaken = (int)timer.ElapsedMilliseconds;
-                _logger.LogInformation($"Server Tick took {timer.ElapsedMilliseconds}ms");
-                _logger.LogInformation($"Percentage of time spent on moving ships: {timer.ElapsedMilliseconds / 1000.0 * 100}%");
-                // Server Loop End
-
+                    //Stop Timer
+                    timer.Stop();
+                    tickTimeTaken = (int)timer.ElapsedMilliseconds;
+                    //_logger.LogInformation($"Server Tick took {timer.ElapsedMilliseconds}ms");
+                    //_logger.LogInformation($"Percentage of time spent on moving ships: {timer.ElapsedMilliseconds / 1000.0 * 100}%");
+                    // Server Loop End
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
     }

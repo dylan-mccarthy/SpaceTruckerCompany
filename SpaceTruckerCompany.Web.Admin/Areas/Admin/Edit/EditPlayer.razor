@@ -1,0 +1,91 @@
+@page "/Admin/Edit/EditPlayer/{id}"
+@layout MainLayout
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Text;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.IdentityModel.Tokens;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System;
+@using SpaceTruckerCompany.Web.Admin.Models;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+@inject ITokenGenerator TokenGenerator
+@attribute [Authorize(Roles = "Admin")]
+
+<h1>Edit Player</h1>
+
+@if (_player != null)
+{
+    <form>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" value="@_player.Name" />
+        </div>
+        <div class="form-group">
+            <label for="Credits">Credits:</label>
+            <input type="number" class="form-control" id="score" name="score" value="@_player.Credits" />
+        </div>
+        <button type="submit" class="btn btn-primary" @onclick="() => UpdatePlayer()">Save</button>
+    </form>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private Player _player;
+
+    [Parameter]
+    public string id { get; set; }
+
+    public EditPlayer(){
+        _player = new Player("dummy");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if(!user.IsInRole("Admin"))
+            NavigationManager.NavigateTo("/");
+
+        _player = await GetPlayer(user as ClaimsPrincipal, id);
+    }
+
+    private async Task<Player> GetPlayer(ClaimsPrincipal user, string id)
+    {
+        var token = TokenGenerator.GenerateToken(user.Claims);
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await client.GetAsync($"http://localhost:5094/Account/Admin/{id}");
+        if(!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(response.StatusCode);
+            NavigationManager.NavigateTo("/Admin/Players");
+        }
+        var content = await response.Content.ReadAsStringAsync();
+        var player = System.Text.Json.JsonSerializer.Deserialize<Player>(content, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return player;
+    }
+
+    private async void UpdatePlayer(){
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var token = TokenGenerator.GenerateToken(user.Claims);
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await client.PutAsJsonAsync($"http://localhost:5094/Account/Admin/Edit/{_player.Username}", _player);
+        if(response.IsSuccessStatusCode){
+            NavigationManager.NavigateTo("/Admin/Players");
+        }
+    }
+
+
+}

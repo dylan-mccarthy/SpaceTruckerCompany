@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using SpaceTruckerCompany.API.Models;
+using SpaceTruckerCompany.Web.Admin.Models;
 
-namespace SpaceTruckerCompany.API.Data
+namespace SpaceTruckerCompany.Web.Admin.Data
 {
     public interface IRepository<T> where T : class, IEntity
     {

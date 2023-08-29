@@ -1,0 +1,104 @@
+@page "/Admin/ManagePlayers"
+@layout MainLayout
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Text;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.IdentityModel.Tokens;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System;
+@using SpaceTruckerCompany.Web.Admin.Models;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+@inject ITokenGenerator TokenGenerator
+@attribute [Authorize(Roles = "Admin")]
+
+<h1>Manage Players</h1>
+
+@if (players != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in players)
+            {
+                <tr>
+                    <td>@player.Username</td>
+                    <td>@player.NumberOfShips</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditPlayer(player.Id)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeletePlayer(player.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Player> players;
+    public ManagePlayers()
+    {
+        players = new List<Player>();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if(!user.IsInRole("Admin"))
+            NavigationManager.NavigateTo("/");
+
+        players = await GetPlayers(user as ClaimsPrincipal);
+    }
+
+    public async Task<List<Player>> GetPlayers(ClaimsPrincipal user)
+    {
+        Console.WriteLine("Getting players");
+        var tokenString = TokenGenerator.GenerateToken(user.Claims);
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+        //Remove hard coding later
+        var response = await httpClient.GetAsync("http://localhost:5094/Account/Admin/All");
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Success");
+            var players = await response.Content.ReadFromJsonAsync<List<Player>>();
+            return players;
+        }
+        else
+        {
+            Console.WriteLine("Failure");
+            Console.WriteLine(response.StatusCode);
+            return null;
+        }
+    }
+
+    public async Task EditPlayer(int id)
+    {
+        NavigationManager.NavigateTo($"/Admin/Edit/EditPlayer/{id}");
+    }
+
+    public async Task DeletePlayer(int id)
+    {
+        //Clean up to use the int Id for the player instead of passing the username
+        var playerUsername = players.Find(p => p.Id == id).Username;
+        var httpClient = new HttpClient();
+        var response = await httpClient.DeleteAsync($"https://localhost:5094/Account/Admin/{playerUsername}");
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/Admin/ManagePlayers");
+        }
+    }
+
+}

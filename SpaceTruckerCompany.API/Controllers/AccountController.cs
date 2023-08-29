@@ -31,14 +31,24 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Getting Account Information for {username}");
         return _accountService.GetAccount(username);
     }
-    [HttpGet("/Admin", Name = "AdminGetAccount")]
+    [HttpGet("Admin/{id}")]
     [Authorize(Roles = "Admin")]
-    public Player AdminGet(Player player)
+    public ActionResult<Player?> AdminGet([FromRoute]int id)
+    {
+        if(User.Identity == null) throw new Exception("Unable to find User Information");
+        var adminUser = User.Identity.Name;
+        var player = _accountService.GetAccount(id);
+        _logger.LogInformation($"Getting Account Information for {player.Username} requested by {adminUser}");
+        return player;
+    }
+    [HttpGet("Admin/All")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<List<Player>>> AdminGetAll()
     {
         if(User.Identity == null) throw new Exception("Unable to find User Information");
         var username = User.Identity.Name;
-        _logger.LogInformation($"Getting Account Information for {username}");
-        return _accountService.GetAccount(player.Username);
+        _logger.LogInformation($"Getting All Account Information for {username}");
+        return _accountService.GetAllAccounts();
     }
     [HttpPost(Name = "CreateAccount")]
     public Player Create()
@@ -58,6 +68,15 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Updating Account for {username}");
         return _accountService.UpdateAccount(player);
     }
+    [HttpPut("Admin/Edit/{username}", Name = "AdminUpdateAccount")]
+    [Authorize(Roles = "Admin")]
+    public Player AdminUpdate([FromRoute]string username, Player player)
+    {
+        if(User.Identity == null) throw new Exception("Unable to find User Information");
+        var adminUser = User.Identity.Name;
+        _logger.LogInformation($"Updating Account {username} for {adminUser}");
+        return _accountService.UpdateAccount(player);
+    }
     [HttpDelete(Name = "PlayerDeleteAccount")]
     public void PlayerDelete(Player player)
     {
@@ -68,13 +87,14 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Deleting Account for {username}");
         _accountService.DeleteAccount(player);
     }
-    [HttpDelete("Admin", Name = "AdminDeleteAccount")]
+    [HttpDelete("Admin/{username}", Name = "AdminDeleteAccount")]
     [Authorize(Roles = "Admin")]
-    public void AdminDelete(Player player)
+    public void AdminDelete([FromRoute]string username)
     {
         if(User.Identity == null) throw new Exception("Unable to find User Information");
-        var username = User.Identity.Name;
-        _logger.LogInformation($"Deleting Account for {username}");
+        var adminUser = User.Identity.Name;
+        _logger.LogInformation($"Deleting Account {username} for {adminUser}");
+        var player = _accountService.GetAccount(username);
         _accountService.DeleteAccount(player);
     }
 

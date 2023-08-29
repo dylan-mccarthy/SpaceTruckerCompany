@@ -1,0 +1,52 @@
+﻿@page "/Admin"
+@layout MainLayout
+@using Microsoft.AspNetCore.Identity;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+@inject ITokenGenerator TokenGenerator
+@attribute [Authorize(Roles = "Admin")]
+
+<h1>Admin Page</h1>
+
+<nav>
+    <ul>
+        <li><a class="adminBtn" href="/Admin/ManageSpaceStation">Manage Space Station</a></li>
+        <li><a class="adminBtn" href="/Admin/ManagePlayers">Manage Players</a></li>
+        <li><a class="adminBtn" href="/Admin/ManageSpaceShips">Manage Space Ships</a></li>
+    </ul>
+</nav>
+
+<style>
+    .adminBtn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 0.25rem;
+        text-decoration: none;
+    }
+
+    .adminBtn:hover {
+        background-color: #0069d9;
+        color: #fff;
+    }
+</style>
+
+
+@code {
+    public AdminBasePage()
+    {
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if(!user.IsInRole("Admin"))
+            NavigationManager.NavigateTo("/");
+    }
+}
